@@ -1,0 +1,446 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Discover timeless elegance and exclusive haute couture evening dresses at Maison Élégance.">
+    <title>Maison Élégance | Haute Couture</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <header>
+        <h1>MAISON ÉLÉGANCE</h1>
+        <p>HAUTE COUTURE</p>
+
+        <nav>
+            <a href="#home">HOME</a>
+            <a href="#about">ABOUT</a>
+            <a href="#collection">COLLECTION</a>
+            <a href="#contact">CONTACT</a>
+        </nav>
+    </header>
+
+    <main>
+
+        <section class="hero" id="home">
+            <h2>Elegance is an Art</h2>
+
+            <img
+                src="https://images.unsplash.com/photo-1539109136881-3be0616acf4b?w=1200"
+                alt="Elegant haute couture fashion"
+                class="fashion-image"
+            >
+
+            <p>Discover the beauty of timeless fashion.</p>
+
+            <button onclick="document.getElementById('collection').scrollIntoView({behavior:'smooth'})">
+                Explore Collection
+            </button>
+        </section>
+
+        <section id="about" class="about">
+            <h2>Our Story</h2>
+
+            <p>
+                Fashion is more than clothing.
+                It is art, identity and emotion.
+            </p>
+
+            <p>
+                We create timeless elegance
+                for women who dare to be unique.
+            </p>
+        </section>
+
+        <section id="collection" class="collection">
+
+            <h2>Our Collection</h2>
+
+            <button id="cart-toggle">
+                Shopping Cart (<span id="cart-count">0</span>)
+            </button>
+
+            <div class="dress-container">
+
+                <div class="dress">
+                    <img
+                        src="https://images.unsplash.com/photo-1566174053879-31528523f8ae?w=600"
+                        alt="Royal Elegance evening dress"
+                    >
+
+                    <h3>Royal Elegance</h3>
+                    <p>Evening Collection</p>
+
+                    <button data-action="details">View Details</button>
+                    <button class="add-to-cart" data-action="add">
+                        Add to Cart
+                    </button>
+                </div>
+
+                <div class="dress">
+                    <img
+                        src="https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=600"
+                        alt="Timeless Beauty luxury dress"
+                    >
+
+                    <h3>Timeless Beauty</h3>
+                    <p>Luxury Collection</p>
+
+                    <button data-action="details">View Details</button>
+                    <button class="add-to-cart" data-action="add">
+                        Add to Cart
+                    </button>
+                </div>
+
+            </div>
+        </section>
+
+        <section id="shopping-cart" class="shopping-cart">
+
+            <h2>Your Shopping Bag</h2>
+            <p class="cart-subtitle">Your selected pieces of elegance</p>
+
+            <div id="cart-items"></div>
+
+            <button id="clear-cart">Clear Cart</button>
+
+            <div class="cart-summary">
+                <h3>
+                    Total:
+                    <span id="cart-total">0</span> DT
+                </h3>
+
+                <button id="checkout-button">
+                    Proceed to Checkout
+                </button>
+            </div>
+
+        </section>
+
+        <section id="contact" class="contact">
+            <h2>Contact Us</h2>
+            <p>We would love to hear from you.</p>
+
+            <a href="https://mail.google.com/mail/?view=cm&fs=1&to=maramkhedri12@gmail.com"
+               target="_blank" rel="noopener">
+                Send Us an Email
+            </a>
+        </section>
+
+    </main>
+
+    <footer>
+        <p>© 2026 Maison Élégance. All rights reserved.</p>
+    </footer>
+
+    <!-- Product Details Modal -->
+
+    <div id="product-modal" class="modal">
+
+        <div class="modal-content">
+
+            <button class="close-modal" aria-label="Close">&times;</button>
+
+            <img id="modal-image" src="" alt="Selected dress">
+
+            <h2 id="modal-title"></h2>
+            <p id="modal-description"></p>
+
+            <label for="dress-size">Choose Size:</label>
+
+            <select id="dress-size">
+                <option value="XS">XS</option>
+                <option value="S">S</option>
+                <option value="M" selected>M</option>
+                <option value="L">L</option>
+            </select>
+
+            <label for="dress-color">Choose Color:</label>
+
+            <select id="dress-color">
+                <option value="Black">Black</option>
+                <option value="Royal Blue">Royal Blue</option>
+                <option value="Burgundy">Burgundy</option>
+                <option value="Emerald Green">Emerald Green</option>
+            </select>
+
+            <button id="modal-add-to-cart">Add to Cart</button>
+
+            <a id="modal-order" class="order-button" href="#">
+                Order Now
+            </a>
+
+        </div>
+    </div>
+
+    <script>
+
+        // Product information
+
+        const modal = document.getElementById("product-modal");
+        const modalImage = document.getElementById("modal-image");
+        const modalTitle = document.getElementById("modal-title");
+        const modalDescription = document.getElementById("modal-description");
+
+        const dressSize = document.getElementById("dress-size");
+        const dressColor = document.getElementById("dress-color");
+
+        let currentDressName = "";
+        let currentDressImage = "";
+
+        // Shopping cart data
+
+        let cart = JSON.parse(localStorage.getItem("maisonCart")) || [];
+
+        const cartCount = document.getElementById("cart-count");
+        const cartItems = document.getElementById("cart-items");
+        const cartTotal = document.getElementById("cart-total");
+
+        // Open product details
+
+        document.querySelectorAll(".dress").forEach(dress => {
+
+            const detailsButton = dress.querySelector('[data-action="details"]');
+            const addButton = dress.querySelector('[data-action="add"]');
+
+            function openProduct() {
+
+                currentDressName = dress.querySelector("h3").textContent;
+                currentDressImage = dress.querySelector("img").src;
+
+                modalImage.src = currentDressImage;
+                modalTitle.textContent = currentDressName;
+                modalDescription.textContent =
+                    "Discover our exclusive luxury design.";
+
+                dressSize.value = "M";
+                dressColor.value = "Black";
+
+                modal.style.display = "flex";
+            }
+
+            detailsButton.addEventListener("click", openProduct);
+            addButton.addEventListener("click", openProduct);
+
+        });
+
+        // Order directly from product details
+
+document.getElementById("modal-order").addEventListener("click", function(event) {
+
+    event.preventDefault();
+
+    const subject = "Order: " + currentDressName;
+
+    const body =
+        "Dress: " + currentDressName +
+        "\nSize: " + dressSize.value +
+        "\nColor: " + dressColor.value;
+
+    const gmailLink =
+        "https://mail.google.com/mail/?view=cm&fs=1&to=maramkhedri12@gmail.com&su=" +
+        encodeURIComponent(subject) +
+        "&body=" + encodeURIComponent(body);
+
+    window.open(gmailLink, "_blank", "noopener");
+
+});
+        // Close modal
+
+        document.querySelector(".close-modal").onclick = function() {
+            modal.style.display = "none";
+        };
+
+        modal.addEventListener("click", function(event) {
+            if (event.target === modal) {
+                modal.style.display = "none";
+            }
+        });
+
+        document.addEventListener("keydown", function(event) {
+            if (event.key === "Escape") {
+                modal.style.display = "none";
+            }
+        });
+
+        // Update shopping cart
+
+        function updateCart() {
+
+            cartCount.textContent = cart.reduce(
+                (sum, item) => sum + item.quantity, 0
+            );
+
+            cartItems.innerHTML = "";
+
+            let total = 0;
+
+            cart.forEach((item, index) => {
+
+                total += item.price * item.quantity;
+
+                cartItems.innerHTML += `
+                    <div class="cart-product">
+
+                        <img src="${item.image}" alt="${item.name}">
+
+                        <div class="cart-product-info">
+
+                            <h3>${item.name}</h3>
+
+                            <p>Size: ${item.size}</p>
+                            <p>Color: ${item.color}</p>
+                            <p>${item.price} DT</p>
+
+                            <div class="quantity-controls">
+
+                                <button onclick="changeQuantity(${index}, -1)">−</button>
+
+                                <span>${item.quantity}</span>
+
+                                <button onclick="changeQuantity(${index}, 1)">+</button>
+
+                            </div>
+
+                            <button onclick="removeItem(${index})">
+                                Remove
+                            </button>
+
+                        </div>
+                    </div>
+                `;
+            });
+
+            cartTotal.textContent = total;
+
+            localStorage.setItem("maisonCart", JSON.stringify(cart));
+        }
+
+        // Add product to cart
+
+        document.getElementById("modal-add-to-cart").onclick = function() {
+
+            const name = currentDressName;
+            const image = currentDressImage;
+            const size = dressSize.value;
+            const color = dressColor.value;
+
+            const existingItem = cart.find(item =>
+                item.name === name &&
+                item.size === size &&
+                item.color === color
+            );
+
+            if (existingItem) {
+                existingItem.quantity++;
+            } else {
+                cart.push({
+                    name: name,
+                    image: image,
+                    size: size,
+                    color: color,
+                    price: 250,
+                    quantity: 1
+                });
+            }
+
+            updateCart();
+
+            modal.style.display = "none";
+
+            alert(name + " added to cart!");
+        };
+
+        // Change product quantity
+
+        function changeQuantity(index, amount) {
+
+            cart[index].quantity += amount;
+
+            if (cart[index].quantity <= 0) {
+                cart.splice(index, 1);
+            }
+
+            updateCart();
+        }
+
+        // Remove product
+
+        function removeItem(index) {
+            cart.splice(index, 1);
+            updateCart();
+        }
+
+        // Clear cart
+
+        document.getElementById("clear-cart").onclick = function() {
+
+            if (cart.length === 0) {
+                return;
+            }
+
+            if (confirm("Are you sure you want to clear your shopping bag?")) {
+                cart = [];
+                updateCart();
+            }
+        };
+
+        // Scroll to cart
+
+        document.getElementById("cart-toggle").onclick = function() {
+
+            document.getElementById("shopping-cart").scrollIntoView({
+                behavior: "smooth"
+            });
+        };
+
+        // Prepare order email
+
+        function createOrderEmail() {
+
+            if (cart.length === 0) {
+                alert("Your cart is empty!");
+                return;
+            }
+
+            let orderDetails = "My Order:\n\n";
+
+            cart.forEach(item => {
+
+                orderDetails +=
+                    item.name +
+                    "\nSize: " + item.size +
+                    "\nColor: " + item.color +
+                    "\nQuantity: " + item.quantity +
+                    "\nPrice: " + (item.price * item.quantity) +
+                    " DT\n\n";
+            });
+
+            const total = cart.reduce(
+                (sum, item) => sum + item.price * item.quantity, 0
+            );
+
+            orderDetails += "Total: " + total + " DT";
+
+            const gmailLink =
+                "https://mail.google.com/mail/?view=cm&fs=1&to=maramkhedri12@gmail.com&su=" +
+                encodeURIComponent("New Fashion Order") +
+                "&body=" + encodeURIComponent(orderDetails);
+
+            window.open(gmailLink, "_blank", "noopener");
+        }
+
+        document.getElementById("checkout-button").onclick = createOrderEmail;
+
+        // Initial cart display
+
+        updateCart();
+
+    </script>
+
+</body>
+</html>
